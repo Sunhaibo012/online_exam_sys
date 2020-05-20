@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dimple.dao.SubjectDao">
+
+    <resultMap type="com.dimple.entity.Question" id="SubjectMap">
+        <result property="subid" column="subid"/>
+        <result property="subname" column="subname"/>
+    </resultMap>
+
+    <select id="findSubjectList" resultMap="SubjectMap">
+        select subid,subname from subject where state ='1'
+            <if test="subname != null and subname !=''">
+               and subname like '%${subname}%'
+            </if>
+    </select>
+
+    <select id="queryById" resultMap="SubjectMap">
+        select subid,subname from subject where subid =#{subid} and state='1'
+    </select>
+
+    <insert id="insert">
+        insert into subject(subid,subname,state)
+        values ((SELECT DATE_FORMAT(NOW(),'%Y%m%d%H%i%s') FROM DUAL),#{subname},'1')
+    </insert>
+
+    <update id="update">
+        update subject set subname = #{subname} where subid = #{subid}
+    </update>
+
+    <delete id="deleteSave">
+        DELETE from SUBJECT where subid in
+        <foreach collection="array" item="id" separator="," open="(" close=")">
+          #{id}
+        </foreach>
+    </delete>
+
+    <select id="getSubject" resultType="java.util.HashMap">
+        select subid,subname from subject where state='1'
+    </select>
+</mapper>
